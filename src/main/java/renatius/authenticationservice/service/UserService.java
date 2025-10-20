@@ -2,17 +2,12 @@ package renatius.authenticationservice.service;
 
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.core.AuthenticationException;
-import renatius.authenticationservice.dto.JWTAuthenticationDto;
-import renatius.authenticationservice.dto.RefreshTokenDto;
-import renatius.authenticationservice.dto.UserCredentialsDto;
-import renatius.authenticationservice.dto.UserDto;
+import renatius.authenticationservice.dto.*;
 
 public interface UserService {
 
-    JWTAuthenticationDto singIn(UserCredentialsDto userCredentialsDto) throws AuthenticationException;
-    JWTAuthenticationDto refreshToken(RefreshTokenDto refreshTokenDto) throws Exception;
-    //UserDto getUserById(String id) throws ChangeSetPersister.NotFoundException;
-    //UserDto getUserByEmail(String email) throws ChangeSetPersister.NotFoundException;
+    JWTAuthenticationDto singIn(UserCredentialsDto userCredentialsDto);
+    JWTAuthenticationDto refreshToken(RefreshTokenDto refreshTokenDto);
     boolean addUser(UserDto user);
-    boolean validateUserToken(String token) throws AuthenticationException;
+    boolean validateUserToken(String authHeader);
 }

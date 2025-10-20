@@ -1,16 +1,15 @@
 package renatius.authenticationservice.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+import renatius.authenticationservice.dto.AccessTokenDto;
 import renatius.authenticationservice.dto.JWTAuthenticationDto;
-import renatius.authenticationservice.dto.RefreshTokenDto;
 import renatius.authenticationservice.dto.UserCredentialsDto;
+import renatius.authenticationservice.dto.UserDto;
+import renatius.authenticationservice.dto.RefreshTokenDto;
 import renatius.authenticationservice.service.UserService;
-
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,30 +18,25 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public ResponseEntity<JWTAuthenticationDto> singIn(@RequestBody UserCredentialsDto userCredentialsDto) {
-        try {
-            JWTAuthenticationDto jwtAuthenticationDto = userService.singIn(userCredentialsDto);
-            return ResponseEntity.ok(jwtAuthenticationDto);
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
+    public ResponseEntity<JWTAuthenticationDto> singIn(@RequestBody @Valid UserCredentialsDto userCredentialsDto) {
+        return ResponseEntity.ok(userService.singIn(userCredentialsDto));
     }
 
     @PostMapping("/refresh-token")
-    public JWTAuthenticationDto refresh(@RequestBody RefreshTokenDto refreshTokenDto) throws Exception {
-        return userService.refreshToken(refreshTokenDto);
+    public ResponseEntity<JWTAuthenticationDto> refresh(@RequestBody @Valid RefreshTokenDto refreshTokenDto) {
+       JWTAuthenticationDto jwtAuthenticationDto = userService.refreshToken(refreshTokenDto);
+       return ResponseEntity.ok(jwtAuthenticationDto);
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<?> validate(@RequestHeader("Authorization")  String authHeader) throws Exception {
-        String token = authHeader.substring(7);
-        if (!userService.validateUserToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("valid", false, "reason", "Invalid or expired token"));
-        }
+    public ResponseEntity<?> validate(@RequestHeader("Authorization") String authHeader) {
+        Boolean validate = userService.validateUserToken(authHeader);
+        return ResponseEntity.ok(validate);
+    }
 
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of(
-                "valid", true
-        ));
+    @PostMapping("/register")
+    public ResponseEntity<?> createUser(@RequestBody @Valid UserDto userDto) {
+        return ResponseEntity.ok(userService.addUser(userDto));
     }
 }
+

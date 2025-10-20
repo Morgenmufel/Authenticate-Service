@@ -1,21 +1,22 @@
 package renatius.authenticationservice.security;
 
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.Claims;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import renatius.authenticationservice.dto.JWTAuthenticationDto;
 import renatius.authenticationservice.exceptions.InvalidTokenException;
-
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
@@ -43,7 +44,7 @@ public class JWTService {
 
     private String generateJwtToken(UUID userid, String username, String email){
         Date date = Date.from(LocalDateTime.now()
-                .plusMinutes(10)
+                .plusMinutes(1)
                 .atZone(ZoneId.systemDefault())
                 .toInstant());
 
@@ -58,7 +59,7 @@ public class JWTService {
 
     private String generateJwtRefreshToken(UUID userid, String username, String email){
         Date date = Date.from(LocalDateTime.now()
-                .plusDays(1)
+                .plusDays(5)
                 .atZone(ZoneId.systemDefault())
                 .toInstant());
 
@@ -72,9 +73,6 @@ public class JWTService {
     }
 
     public boolean validateJwtToken(String token) {
-        if (token == null || token.isEmpty()) {
-            throw new InvalidTokenException("JWT token is missing");
-        }
         try{
             Jwts.parser()
                     .verifyWith(generateSignKey())
@@ -101,26 +99,7 @@ public class JWTService {
     }
 
     private SecretKey generateSignKey(){
-        LOGGER.error("Generate key" + Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8)));
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
-    }
-
-    public String getUsernameFromToken(String token){
-        Claims claims = Jwts.parser()
-                .verifyWith(generateSignKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        return claims.get("username", String.class);
-    }
-
-    public UUID getUserIdFromToken(String token){
-        Claims claims = Jwts.parser()
-                .verifyWith(generateSignKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-        return UUID.fromString(claims.getSubject());
     }
 
     public String getEmailFromToken(String token){

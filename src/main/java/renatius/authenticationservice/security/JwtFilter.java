@@ -1,5 +1,4 @@
 package renatius.authenticationservice.security;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import renatius.authenticationservice.exceptions.InvalidTokenException;
-
 import java.io.IOException;
 
 @Component
@@ -31,15 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        String path = request.getServletPath();
-
-        if ("/auth/refresh-token".equals(path)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         String token = getTokenFromRequest(request);
-
         if (token == null || token.isBlank()) {
             LOGGER.debug("JWT token not found in Authorization header");
             filterChain.doFilter(request, response);
