@@ -28,20 +28,19 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-
-        String token = getTokenFromRequest(request);
-        if (token == null || token.isBlank()) {
-            LOGGER.debug("JWT token not found in Authorization header");
+        String path = request.getRequestURI();
+        if (path.equals("/auth/register") || path.equals("/auth/login") || path.equals("/auth/refresh-token")
+                || path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs")) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        String token = getTokenFromRequest(request);
         if (!jwtService.validateJwtToken(token)) {
             throw new InvalidTokenException("Invalid JWT token");
         }
         setCustomUserDetailsToSecurityContextHolder(token);
         filterChain.doFilter(request, response);
-
     }
 
     private void setCustomUserDetailsToSecurityContextHolder(String token) {
@@ -54,10 +53,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            LOGGER.error(bearerToken);
+        if (bearerToken == null || bearerToken.isBlank()) {
+            LOGGER.error("JWT token not found in Authorization header");
+            throw new InvalidTokenException("JWT token not found in Authorization header or wrong Header");
+        }
+        if (bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7).trim();
         }
-        return null;
+        throw new InvalidTokenException("Invalid JWT token: The token must start with 'Bearer '");
     }
 }

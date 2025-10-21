@@ -4,6 +4,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import renatius.authenticationservice.entity.User;
 import renatius.authenticationservice.exceptions.UserNotFoundException;
 import renatius.authenticationservice.repository.UserRepository;
 
@@ -15,7 +16,8 @@ public class CustomUserServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
+        User user =  userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User with this email not found " + email));
+        return new CustomUserDetails(user);
     }
 }

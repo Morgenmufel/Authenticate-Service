@@ -8,10 +8,16 @@
 
     <changeSet id="001" author="renatius">
         <sqlFile path="liquibase/v-1/create-schema-user_schema.sql"/>
+        <rollback>
+            <sqlFile path="liquibase/v-1/rollback-schema-user_schema.sql"/>
+        </rollback>
     </changeSet>
 
     <changeSet id="002" author="renatius">
         <sqlFile path="liquibase/v-1/create-table-users.sql"/>
+        <rollback>
+            <sqlFile path="liquibase/v-1/rollback-table-users.sql"/>
+        </rollback>
     </changeSet>
 
 </databaseChangeLog>

@@ -1,7 +1,6 @@
 package renatius.authenticationservice.security;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -44,7 +43,7 @@ public class JWTService {
 
     private String generateJwtToken(UUID userid, String username, String email){
         Date date = Date.from(LocalDateTime.now()
-                .plusMinutes(1)
+                .plusMinutes(10)
                 .atZone(ZoneId.systemDefault())
                 .toInstant());
 
@@ -53,7 +52,7 @@ public class JWTService {
                 .claim("username", username)
                 .claim("email", email)
                 .expiration(date)
-                .signWith(generateSignKey(), SignatureAlgorithm.HS256)
+                .signWith(generateSignKey())
                 .compact();
     }
 
@@ -68,7 +67,7 @@ public class JWTService {
                 .claim("username", username)
                 .claim("email", email)
                 .expiration(date)
-                .signWith(generateSignKey(), SignatureAlgorithm.HS256)
+                .signWith(generateSignKey())
                 .compact();
     }
 
