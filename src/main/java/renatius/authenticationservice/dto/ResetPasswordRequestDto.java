@@ -13,6 +13,7 @@ public class ResetPasswordRequestDto {
 
     @NotBlank
     private String token;
+
     @NotBlank
     private String password;
 

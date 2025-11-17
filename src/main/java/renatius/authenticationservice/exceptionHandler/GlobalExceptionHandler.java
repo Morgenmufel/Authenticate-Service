@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -52,6 +53,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponseDto> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponseDto> handleMissingRequestHeader(
+            org.springframework.web.bind.MissingRequestHeaderException ex
+    ) {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

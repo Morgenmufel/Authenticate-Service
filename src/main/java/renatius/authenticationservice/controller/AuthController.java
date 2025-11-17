@@ -40,8 +40,8 @@ public class AuthController {
     @PostMapping("/refresh-token")
     @Operation(summary = "Refresh JWT token", description = "Generates new JWT tokens using a valid refresh token")
     public ResponseEntity<JWTAuthenticationDto> refresh(@RequestBody @Valid RefreshTokenDto refreshTokenDto) {
-       JWTAuthenticationDto jwtAuthenticationDto = userService.refreshToken(refreshTokenDto);
-       return ResponseEntity.ok(jwtAuthenticationDto);
+        JWTAuthenticationDto jwtAuthenticationDto = userService.refreshToken(refreshTokenDto);
+        return ResponseEntity.ok(jwtAuthenticationDto);
     }
 
     @PostMapping("/validate")
@@ -60,13 +60,13 @@ public class AuthController {
 
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequestDto req) {
+    public ResponseEntity<?> forgotPassword(@RequestBody @Valid ForgotPasswordRequestDto req) {
         passwordResetService.sendResetLink(req);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequestDto req) {
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequestDto req) {
         passwordResetService.resetPassword(req);
         return ResponseEntity.ok().build();
     }

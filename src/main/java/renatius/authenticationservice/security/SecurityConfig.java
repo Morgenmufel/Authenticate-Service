@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling
                         (c -> c.authenticationEntryPoint(authenticationEntryPoint)
-                );
+                        );
         return http.build();
     }
 }
