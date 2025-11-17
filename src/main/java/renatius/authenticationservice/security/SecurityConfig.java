@@ -29,8 +29,8 @@ public class SecurityConfig {
                                 "/auth/register",
                                 "/auth/refresh-token",
                                 "/auth/login",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**").permitAll()
+                                "/auth/forgot-password",
+                                "/auth/reset-password").permitAll()
                         .requestMatchers("/**").authenticated())
                 .sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

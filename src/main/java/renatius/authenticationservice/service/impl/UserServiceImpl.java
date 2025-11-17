@@ -1,6 +1,8 @@
 package renatius.authenticationservice.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import renatius.authenticationservice.dto.UserDto;
 import renatius.authenticationservice.dto.RefreshTokenDto;
@@ -24,7 +26,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final JWTService jwtService;
-    private final PasswordUtil passwordUtil;
+    private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
 
     @Override
     public JWTAuthenticationDto singIn(UserCredentialsDto userCredentialsDto) {
@@ -36,6 +38,7 @@ public class UserServiceImpl implements UserService {
     public JWTAuthenticationDto refreshToken(RefreshTokenDto refreshTokenDto)  {
         String refreshToken = refreshTokenDto.getRefreshToken().trim();
         if (!jwtService.validateJwtToken(refreshToken)) {
+            LOGGER.error("Refresh token is invalid");
             throw new InvalidTokenException("Refresh token is invalid");
         }
         User user = findByEmail(jwtService.getEmailFromToken(refreshToken));
@@ -46,6 +49,7 @@ public class UserServiceImpl implements UserService {
     public boolean addUser(UserDto userDto){
         if (userRepository.existsByEmail(userDto.getEmail())
                 || userRepository.existsByUsername(userDto.getUsername())) {
+            LOGGER.error("User already exists");
             throw new UserAlreadyExistsException("User already exists");
         }
         User user = userMapper.toEntity(userDto);
@@ -60,12 +64,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean validateUserToken(String authHeader) {
         if(authHeader != null && authHeader.startsWith("Bearer ")) {
-            authHeader.substring(7).trim();
-            if (!jwtService.validateJwtToken(authHeader)) {
+            String token = authHeader.substring(7).trim();
+            if (!jwtService.validateJwtToken(token)) {
                 throw new InvalidTokenException("Token is invalid or expired");
             }
             return true;
         }
+        LOGGER.error("Invalid token");
         throw new InvalidTokenException("Invalid token");
     }
 
@@ -75,6 +80,7 @@ public class UserServiceImpl implements UserService {
             if (PasswordUtil.validatePassword(userCredentialsDto.getPassword(), user.getPassword())){
                 return user;
             }
+                LOGGER.error("Invalid credentials");
                 throw new InvalidCredentialsException("Invalid credentials");
     }
 

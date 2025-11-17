@@ -1,7 +1,12 @@
-FROM eclipse-temurin:21
+FROM eclipse-temurin:21 AS build
+WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
-RUN ./mvnw dependency:go-offline
 COPY src ./src
-EXPOSE 8080
-CMD ["./mvnw", "spring-boot:run"]
+RUN ./mvnw clean package -DskipTests
+FROM eclipse-temurin:21
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8081
+ENV JAVA_OPTS="-Xmx512m"
+CMD ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

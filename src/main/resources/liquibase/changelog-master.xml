@@ -20,4 +20,9 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="003" author="renatius">
+        <sqlFile path="liquibase/v-1/create-password-reset-token-table.sql"/>
+    </changeSet>
+
+
 </databaseChangeLog>

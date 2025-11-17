@@ -109,5 +109,4 @@ public class JWTService {
                 .getPayload();
         return claims.get("email", String.class);
     }
-
 }

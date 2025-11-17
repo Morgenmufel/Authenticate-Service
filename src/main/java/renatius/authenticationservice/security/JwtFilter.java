@@ -22,19 +22,31 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LogManager.getLogger(JwtFilter.class);
     private final JWTService jwtService;
     private final CustomUserServiceImpl customUserService;
-
+    private static final String[] WHITELIST = {
+            "/auth/register",
+            "/auth/login",
+            "/auth/refresh-token",
+            "/auth/reset-password",
+            "/auth/forgot-password"
+    };
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
-        if (path.equals("/auth/register") || path.equals("/auth/login") || path.equals("/auth/refresh-token")
-                || path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs")) {
+
+        String header = request.getHeader("Authorization");
+        if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-
+        String path = request.getRequestURI();
+        for (String open : WHITELIST) {
+            if (path.startsWith(open)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+        }
         String token = getTokenFromRequest(request);
         if (!jwtService.validateJwtToken(token)) {
             throw new InvalidTokenException("Invalid JWT token");

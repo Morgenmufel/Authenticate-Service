@@ -2,9 +2,11 @@ package renatius.authenticationservice.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Schema(description = "JWT authentication response containing access and refresh tokens")
 public class JWTAuthenticationDto {
     @NotBlank(message = "Access token cannot be blank or null")

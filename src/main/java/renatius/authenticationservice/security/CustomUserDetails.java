@@ -3,7 +3,6 @@ package renatius.authenticationservice.security;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import renatius.authenticationservice.entity.User;
-
 import java.util.Collection;
 import java.util.List;
 
