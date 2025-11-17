@@ -1,12 +1,12 @@
-FROM eclipse-temurin:21 AS build
+FROM eclipse-temurin:21-jdk-slim AS build
 WORKDIR /app
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
+RUN ./mvnw dependency:go-offline
 COPY src ./src
-RUN ./mvnw clean package -DskipTests
-FROM eclipse-temurin:21
+RUN ./mvnw -Dmaven.test.skip=true clean package
+FROM eclipse-temurin:21-jre-slim
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8081
-ENV JAVA_OPTS="-Xmx512m"
-CMD ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
+ENTRYPOINT ["java", "-Xmx512m", "-jar", "app.jar"]
