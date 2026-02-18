@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+           http://www.liquibase.org/xml/ns/dbchangelog
+           http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.23.xsd">
+
+    <changeSet id="001" author="renatius">
+        <sqlFile path="liquibase/v-1/create-schema-user_schema.sql"/>
+        <rollback>
+            <sqlFile path="liquibase/v-1/rollback-schema-user_schema.sql"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="002" author="renatius">
+        <sqlFile path="liquibase/v-1/create-table-users.sql"/>
+        <rollback>
+            <sqlFile path="liquibase/v-1/rollback-table-users.sql"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="003" author="renatius">
+        <sqlFile path="liquibase/v-1/create-password-reset-token-table.sql"/>
+    </changeSet>
+
+
+</databaseChangeLog>
