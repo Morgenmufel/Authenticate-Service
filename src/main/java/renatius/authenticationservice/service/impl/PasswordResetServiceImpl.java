@@ -8,6 +8,7 @@ import renatius.authenticationservice.dto.ForgotPasswordRequestDto;
 import renatius.authenticationservice.dto.ResetPasswordRequestDto;
 import renatius.authenticationservice.entity.PasswordResetToken;
 import renatius.authenticationservice.entity.User;
+import renatius.authenticationservice.exceptions.InvalidCredentialsException;
 import renatius.authenticationservice.exceptions.InvalidTokenException;
 import renatius.authenticationservice.exceptions.UserNotFoundException;
 import renatius.authenticationservice.repository.PasswordResetTokenRepository;
@@ -60,6 +61,9 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new InvalidTokenException("Token expired");}
         User user = userRepo.findByEmail(token.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+        if(req.getPassword().length() < 8) {
+            throw new InvalidCredentialsException("Password must be at least 8 characters");
+        }
         user.setPassword(PasswordUtil.encodePassword(req.getPassword()));
         userRepo.save(user);
         tokenRepo.delete(token);
